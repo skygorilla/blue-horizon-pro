@@ -1,0 +1,205 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #0c0c0f; /* Ensure base background is dark */
+}
+
+/* Dark gray fullscreen background - Base for Canvas */
+.fullscreen-dark-gray {
+  background-color: #0c0c0f; /* Ensure dark background is explicitly set */
+  min-height: 100vh;
+  width: 100vw; /* Use viewport width */
+  position: fixed; /* Ensure it covers the viewport */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50; /* High z-index for login screen */
+  overflow: hidden;
+}
+
+/* Ensure the container hides any overflow */
+.fullscreen-dark-gray,
+.fullscreen-dark-gray > * {
+  overflow: hidden;
+}
+
+#root {
+  /* Reset styles that might constrain the fullscreen view */
+  max-width: none; /* Allow full width */
+  margin: 0;
+  padding: 0;
+  height: 100%; /* Ensure root takes full height */
+  width: 100%; /* Ensure root takes full width */
+  text-align: left; /* Reset text-align if needed */
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Make sure scrollbar also matches dark theme */
+.fullscreen-dark-gray::-webkit-scrollbar {
+  width: 10px;
+}
+
+.fullscreen-dark-gray::-webkit-scrollbar-track {
+  background: #2a2a2a;
+}
+
+.fullscreen-dark-gray::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 5px;
+}
+
+.fullscreen-dark-gray::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Video background styling */
+.video-background {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: auto;
+  min-width: 100vw;
+  min-height: 100vh;
+  transform: translate(-50%, -50%);
+  border: none;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Video wrapper to hide overflow */
+.video-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Full-cover iframe: set width from height to cover 16:9 video */
+.video-wrapper iframe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 100vh;
+  width: calc(100vh * (16 / 9));
+  transform: translate(-50%, -50%);
+}
+
+/* RimLight Effect for Admin Forms - Optimized */
+.rim-light-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  isolation: isolate;
+}
+
+.rim-light-container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    rgba(59, 130, 246, 0.5) 0%, 
+    rgba(59, 130, 246, 0.2) 30%, 
+    transparent 50%, 
+    rgba(236, 72, 153, 0.2) 70%, 
+    rgba(236, 72, 153, 0.5) 100%);
+  z-index: -1;
+  border-radius: inherit;
+  animation: rim-light-rotate 6s linear infinite;
+}
+
+@keyframes rim-light-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Admin styles - consolidated */
+.admin-input {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.admin-input:focus {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important;
+}
+
+.admin-form-card {
+  background-color: rgba(15, 23, 42, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 
+              0 0 20px rgba(59, 130, 246, 0.2) !important;
+  transition: all 0.3s ease;
+  color: #fff !important;
+}
+
+.admin-form-card:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15), 
+              0 0 30px rgba(59, 130, 246, 0.3) !important;
+}
+
+.admin-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  border: none !important;
+  color: white !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.admin-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 15px rgba(29, 78, 216, 0.4) !important;
+}
+
+.admin-button:active {
+  transform: translateY(0) !important;
+}

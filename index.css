@@ -1,0 +1,540 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Update brand color palette for Blue Horizon Pro */
+:root {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --background: 210 20% 98%;   /* very light blue-gray */
+  --foreground: 210 15% 10%;   /* dark navy */
+
+  /* Maritime Palette */
+  --maritime-navy: 210 35% 25%; /* Deep blue */
+  --maritime-teal: 185 50% 40%; /* Rich teal */
+  --maritime-gold: 40 80% 60%;  /* Warm gold */
+  --maritime-sand: 35 30% 88%;  /* Light sand */
+
+  --card: 0 0% 100%;
+  --card-foreground: 180 6% 15%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 180 6% 15%;
+
+  --primary: 210 60% 40%;      /* horizon blue */
+  --primary-foreground: 0 0% 98%;
+
+  --secondary: 185 60% 45%;    /* teal accent */
+  --secondary-foreground: 0 0% 98%;
+
+  --muted: 210 20% 90%;
+  --muted-foreground: 210 20% 40%;
+
+  --accent: 340 100% 50%;      /* raspberry pink */
+  --accent-foreground: 0 0% 98%;
+
+  --destructive: 0 75% 55%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 210 20% 86%;
+  --input: 210 20% 90%;
+  --ring: var(--primary);
+
+  --radius: 0.5rem;
+
+  /* Sidebar widths */
+  --sidebar-expanded-width: 300px;
+  --sidebar-collapsed-width: 60px;
+  --sidebar-width: var(--sidebar-expanded-width);
+
+  /* Base layers */
+  --color-base: #FFFFFF;
+  --color-surface-1: #F8F9FA;
+  --color-surface-2: #E5E7EB;
+  --color-surface-3: #E1E3E5;
+  --color-border: #E5E7EB;
+
+  /* Text */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-tertiary: #6B7280;
+  --color-text-inverse: #FFFFFF;
+
+  /* Accents */
+  --color-accent: #3B82F6;
+  --color-accent-hover: #2563EB;
+  --color-accent-active: #1E40AF;
+
+  /* Feedback */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-info: #0EA5E9;
+
+  /* Focus & Shadows */
+  --color-focus-ring: rgba(59, 130, 246, 0.5);
+  --shadow-sm: 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  /* Typography scale */
+  --font-family-base: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --line-height-sm: 1.25rem;
+  --line-height-base: 1.5rem;
+  --line-height-lg: 1.75rem;
+  --line-height-xl: 2rem;
+
+  /* Spacing scale */
+  --spacing-1: 0.25rem;
+  --spacing-2: 0.5rem;
+  --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.5rem;
+  --spacing-6: 2rem;
+
+  /* Breakpoints */
+  --screen-sm: 640px;
+  --screen-md: 768px;
+  --screen-lg: 1024px;
+  --screen-xl: 1280px;
+
+  --transition-duration: 0.3s;
+}
+
+*, *::before, *::after {
+  transition: background-color var(--transition-duration) ease-in-out,
+              border-color var(--transition-duration) ease-in-out,
+              color var(--transition-duration) ease-in-out,
+              box-shadow var(--transition-duration) ease-in-out;
+}
+
+/* Theme transition specific styles */
+.theme-transition * {
+  transition: background-color var(--transition-duration) ease-in-out,
+              border-color var(--transition-duration) ease-in-out,
+              color var(--transition-duration) ease-in-out,
+              box-shadow var(--transition-duration) ease-in-out !important;
+}
+
+/* Opt specific properties out of transitions - performance optimization */
+a, button, input, select, textarea, .no-transition {
+  transition-property: background-color, border-color, color, box-shadow;
+}
+
+/* Disable transitions for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.dark {
+  /* Canvas & Surfaces */
+  --background: 225 13% 6%;      /* #0B0C10 - base canvas */
+  --card: 225 15% 10%;           /* #131519 - card/modal */
+  --inset: 225 12% 13%;          /* #1C1E22 - input/footer */
+  --accent-pop: 225 10% 15%;     /* #212428 - hover/highlight */
+
+  /* Text & Typography */
+  --foreground: 220 20% 90%;     /* #E5E7EB - primary text */
+  --muted-foreground: 240 6% 65%;/* #A1A1AA - secondary text */
+  --disabled-foreground: 225 6% 45%; /* #6B6F77 - disabled text */
+
+  /* Brand & Accent Colors */
+  --primary: 213 93% 68%;        /* #60A5FA - bright blue CTA */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 42 97% 59%;       /* #FBBF24 - gold accent */
+  --secondary-foreground: 0 0% 15%;
+  --accent: 213 90% 60%;         /* #3B82F6 - links */
+  --accent-foreground: 0 0% 100%;
+
+  /* Borders & Focus */
+  --border: 225 10% 20%;         /* #333740 - border */
+  --input: 225 12% 13%;          /* #1C1E22 - input bg */
+  --ring: 213 93% 68%;           /* #60A5FA - focus ring */
+
+  /* Popover/Card Foreground */
+  --card-foreground: 220 20% 90%;
+  --popover: 225 15% 10%;
+  --popover-foreground: 220 20% 90%;
+
+  /* Shadows (for reference, use Tailwind shadow utilities) */
+  /* --shadow: 0 2px 8px 0 rgba(0,0,0,0.15); */
+}
+
+@layer base {
+  body {
+    @apply bg-neutral-light text-foreground overflow-x-hidden;
+    font-feature-settings: "kern", "liga", "calt";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  h1 {
+    @apply text-2xl font-semibold text-foreground tracking-tight;
+  }
+  
+  h2 {
+    @apply text-xl font-semibold text-foreground tracking-tight;
+  }
+  
+  h3 {
+    @apply text-lg font-medium text-foreground;
+  }
+  
+  h4 {
+    @apply text-base font-medium text-foreground;
+  }
+  
+  .display-large {
+    @apply text-4xl font-bold tracking-tight leading-tight;
+  }
+  
+  .display-medium {
+    @apply text-3xl font-bold tracking-tight leading-tight;
+  }
+  
+  .title-large {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  
+  .title-medium {
+    @apply text-xl font-semibold tracking-tight;
+  }
+  
+  .body-large {
+    @apply text-base leading-relaxed;
+  }
+  
+  .body-medium {
+    @apply text-sm leading-relaxed;
+  }
+  
+  .caption {
+    @apply text-xs text-muted-foreground;
+  }
+}
+
+@layer components {
+  .excel-card {
+    @apply bg-white rounded-md p-4 border border-neutral shadow-sm;
+  }
+  
+  .excel-table-header {
+    @apply bg-neutral;
+  }
+  
+  .excel-table-row-even {
+    @apply bg-white;
+  }
+  
+  .excel-table-row-odd {
+    @apply bg-neutral-light;
+  }
+  
+  .excel-tab {
+    @apply flex items-center justify-center border-t border-l border-r transition-colors;
+  }
+  
+  .excel-tab-active {
+    @apply border-t-2 border-t-primary border-l-primary border-r-primary bg-white;
+  }
+  
+  .excel-tab-inactive {
+    @apply border-t-neutral-medium border-l-neutral-medium border-r-neutral-medium bg-neutral hover:bg-neutral-medium/20;
+  }
+  
+  /* New component styles */
+  .dashboard-card {
+    @apply bg-white rounded-lg p-4 border border-neutral shadow-sm hover:shadow-md transition-shadow;
+  }
+  
+  .section-heading {
+    @apply text-xl font-semibold text-primary mb-4;
+  }
+  
+  .button-primary {
+    @apply bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors;
+  }
+  
+  .button-secondary {
+    @apply bg-neutral text-primary px-4 py-2 rounded-md hover:bg-neutral-medium/20 transition-colors border border-primary;
+  }
+  
+  .tag {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .tag-success {
+    @apply bg-functional-success/20 text-functional-success;
+  }
+  
+  .tag-error {
+    @apply bg-functional-error/20 text-functional-error;
+  }
+  
+  .tag-warning {
+    @apply bg-functional-warning/20 text-functional-warning;
+  }
+  
+  .tag-info {
+    @apply bg-accent-blue/20 text-accent-blue;
+  }
+  
+  /* Maritime theme utilities */
+  .bg-maritime-gradient {
+    @apply bg-gradient-to-r from-maritime-navy to-maritime-teal;
+  }
+  
+  .maritime-card {
+    @apply bg-white rounded-lg border border-maritime-teal/20 shadow-md;
+  }
+  
+  .wave-border {
+    @apply relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-maritime-teal after:opacity-70;
+  }
+  
+  .animate-wave {
+    animation: wave 8s linear infinite;
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 1.2s ease-in forwards;
+  }
+  
+  @keyframes wave {
+    0% {
+      background-position: 0 bottom;
+    }
+    100% {
+      background-position: 200px bottom;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Standardized card sizes */
+  .card-xs {
+    @apply h-[120px] w-full;
+  }
+
+  .card-sm {
+    @apply h-[220px] w-full;
+  }
+
+  .card-md {
+    @apply h-[280px] w-full;
+  }
+
+  .card-lg {
+    @apply h-[320px] w-full;
+  }
+
+  .card-xl {
+    @apply h-[400px] w-full;
+  }
+
+  /* Card layouts */
+  .card-grid {
+    @apply grid gap-4 sm:gap-6;
+  }
+
+  .card-grid-2 {
+    @apply card-grid grid-cols-1 md:grid-cols-2;
+  }
+
+  .card-grid-3 {
+    @apply card-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .card-grid-4 {
+    @apply card-grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4;
+  }
+
+  /* Card padding variations */
+  .card-padding-sm {
+    @apply p-4;
+  }
+
+  .card-padding-md {
+    @apply p-6;
+  }
+
+  .card-padding-lg {
+    @apply p-8;
+  }
+
+  /* Touch-optimized card padding */
+  .touch-mode .card-padding-sm {
+    @apply p-5;
+  }
+
+  .touch-mode .card-padding-md {
+    @apply p-7;
+  }
+
+  .touch-mode .card-padding-lg {
+    @apply p-9;
+  }
+
+  /* Card content spacing */
+  .card-content-spacing {
+    @apply space-y-4;
+  }
+
+  .touch-mode .card-content-spacing {
+    @apply space-y-5;
+  }
+
+  /* Card header spacing */
+  .card-header {
+    @apply flex flex-col space-y-1.5;
+  }
+
+  .card-header-with-icon {
+    @apply flex items-center gap-4;
+  }
+
+  /* Card icon container */
+  .card-icon {
+    @apply p-3 rounded-full;
+  }
+
+  .card-icon-sm {
+    @apply p-2;
+  }
+
+  .card-icon-lg {
+    @apply p-4;
+  }
+
+  .touch-mode .card-icon {
+    @apply p-4;
+  }
+
+  .touch-mode .card-icon-sm {
+    @apply p-3;
+  }
+
+  .touch-mode .card-icon-lg {
+    @apply p-5;
+  }
+}
+
+/* Wrapper for main content to adjust based on sidebar width */
+.main-content-wrapper {
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.2s ease;
+}
+
+/* Hide scrollbars in side menu content */
+.menu-content {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.menu-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+@layer utilities {
+  .w-1\/10 {
+    width: 10%;
+  }
+  .w-3\/10 {
+    width: 30%;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  body {
+    background: white;
+  }
+  
+  .print-container {
+    background: white;
+    height: auto !important;
+  }
+  
+  .print-break-after {
+    page-break-after: always;
+  }
+}
+
+/* Touch mode styles */
+.touch-mode button, 
+.touch-mode .button,
+.touch-mode [role="button"] {
+  min-height: 48px !important;
+}
+
+.touch-mode input,
+.touch-mode select,
+.touch-mode textarea {
+  height: 3rem !important;
+  font-size: 1.125rem !important;
+}
+
+.touch-mode .text-sm {
+  font-size: 1rem !important; /* text-base equivalent */
+  line-height: 1.5rem !important;
+}
+
+.touch-mode .text-xs {
+  font-size: 0.875rem !important; /* text-sm equivalent */
+  line-height: 1.25rem !important;
+}
+
+.touch-mode li, 
+.touch-mode td,
+.touch-mode th {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.touch-mode table {
+  font-size: 1rem !important;
+}
+
+/* Fix circular dependency by using direct CSS instead of @apply */
+.touch-mode .space-y-1 > * + * {
+  margin-top: 0.5rem !important;
+}
+
+/* Fix circular dependency by using direct CSS instead of @apply */
+.touch-mode .space-y-2 > * + * {
+  margin-top: 1rem !important;
+}
+
+/* Responsive adjustments: collapse sidebar on small screens */
+@media (max-width: 768px) {
+  :root {
+    /* Automatically collapse sidebar */
+    --sidebar-width: var(--sidebar-collapsed-width);
+  }
+  .side-menu {
+    position: relative !important;
+    width: var(--sidebar-width) !important;
+    bottom: auto;
+    height: auto;
+  }
+  .main-content-wrapper {
+    margin-left: 0 !important;
+  }
+}
