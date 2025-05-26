@@ -183,6 +183,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   );
 };
 
+// Add the useAuth hook export that was missing
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
 export type { UserRole };
 export { type UserProfile } from '@/types/auth';
 export { AuthContext };
