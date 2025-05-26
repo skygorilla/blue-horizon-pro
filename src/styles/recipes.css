@@ -1,0 +1,117 @@
+
+:root {
+  --primary-color: #007B6F;
+  --primary-light: rgba(0, 123, 111, 0.1);
+  --primary-lighter: rgba(0, 123, 111, 0.05);
+  --primary-dark: #00635A;
+  --gray-100: #f9f9f9;
+  --gray-200: #eaeaea;
+  --gray-300: #d1d1d1;
+  --gray-400: #a0a0a0;
+  --gray-500: #8a8a8a;
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --transition: all 0.2s ease-in-out;
+}
+
+.recipes-page {
+  background: linear-gradient(to bottom, #ffffff, #f9fbfd);
+  min-height: 100vh;
+  color: #333;
+}
+
+.recipes-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.recipes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+/* Update RecipesPage styles */
+.page-title {
+  text-align: center;
+  margin: 30px 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.search-description {
+  text-align: center;
+  color: var(--gray-500);
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.search-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border: 1px solid var(--gray-300);
+  border-radius: 6px;
+  font-size: 16px;
+  transition: var(--transition);
+}
+
+.search-container input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-500);
+}
+
+/* Enhanced Filters Panel */
+.filters-panel {
+  width: 280px;
+  background: linear-gradient(to bottom, #f9f9f9, #f3f3f3);
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+  padding: 22px;
+  position: sticky;
+  top: 20px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid #eaeaea;
+}
+
+/* Recipe Grid Styles */
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.recipe-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  border: 1px solid var(--gray-200);
+}
+
+.recipe-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* Add all remaining styles from the provided CSS */
+/* ... keep existing code (all remaining styles from the HTML template) */

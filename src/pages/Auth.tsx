@@ -1,78 +1,105 @@
-
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuthState } from '@/hooks/useAuthState';
+import { useAuthActions } from '@/hooks/useAuthActions';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
+import AuthTabs from '@/components/auth/AuthTabs';
+import EmbeddedAuth from '@/components/auth/EmbeddedAuth';
+import { AuthFormValues } from '@/components/auth/AuthForm';
+import { ShieldAlert } from 'lucide-react';
 
 const Auth = () => {
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSignUp, setIsSignUp] = useState(false);
+  const { user, loading } = useAuthState();
+  const { signIn, signUp } = useAuthActions({
+    setLoading: () => {},
+    setActiveRole: () => {},
+  });
+  const [isLogin, setIsLogin] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const location = useLocation();
+  
+  // Check if we're in embedded mode (for the welcome page iframe)
+  const isEmbedded = new URLSearchParams(location.search).get('embedded') === 'true';
+  
+  // Check if this is an admin login
+  const isAdminLogin = location.pathname.includes('/admin') || 
+                       new URLSearchParams(location.search).get('role') === 'admin';
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    
+  const onSubmit = async (data: AuthFormValues) => {
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
-        if (error) throw error;
-        alert('Check your email for the confirmation link!');
+      setSubmitting(true);
+      if (isLogin) {
+        // Updated to use the new result pattern
+        const result = await signIn(data.email, data.password);
+        if (!result.success) {
+          console.error('Sign in error:', result.error);
+          const errorMessage = result.error instanceof Error ? (result.error as Error).message : 'Failed to sign in';
+          toast.error(errorMessage);
+        }
+        // Toast is already shown in the signIn method
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        // Updated to use the new result pattern
+        const result = await signUp(data.email, data.password);
+        if (!result.success) {
+          console.error('Sign up error:', result.error);
+          const errorMessage = result.error instanceof Error ? (result.error as Error).message : 'Failed to sign up';
+          toast.error(errorMessage);
+        } else {
+          // Set login to true on successful signup
+          setIsLogin(true);
+        }
+        // Toast is already shown in the signUp method
       }
-    } catch (error: any) {
-      alert(error.message);
+    } catch (error: unknown) {
+      // This catch block should only run if there's an unexpected error
+      console.error('Unexpected authentication error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      toast.error(errorMessage || `Failed to ${isLogin ? 'sign in' : 'sign up'}`);
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
+  // If user is logged in and we're not in embedded mode, redirect to role selection
+  if (user && !loading && !isEmbedded) {
+    return <Navigate to="/role-select" />;
+  }
+
+  // In embedded mode, use the simplified version
+  if (isEmbedded) {
+    return <EmbeddedAuth />;
+  }
+
+  // Normal non-embedded view
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>{isSignUp ? 'Sign Up' : 'Sign In'}</CardTitle>
-          <CardDescription>
-            {isSignUp ? 'Create a new account' : 'Sign in to your account'}
+    <div className={`min-h-screen flex items-center justify-center p-4 ${isAdminLogin ? 'bg-black' : 'bg-gray-100'}`}>
+      <Card className={`w-full max-w-md ${isAdminLogin ? 'admin-form-card rim-light-container' : 'shadow-lg'}`}>
+        <CardHeader className="space-y-1 pb-2">
+          {isAdminLogin && (
+            <div className="flex justify-center mb-3">
+              <ShieldAlert className="h-10 w-10 text-blue-400" />
+            </div>
+          )}
+          <CardTitle className={`text-center ${isAdminLogin ? 'text-white' : 'text-primary'}`}>
+            {isAdminLogin ? 'Administrator Access' : 'Vessel Manager'}
+          </CardTitle>
+          <CardDescription className={`text-center ${isAdminLogin ? 'text-blue-300' : ''}`}>
+            {isAdminLogin 
+              ? "Enter your admin credentials to access the system"
+              : "Enter your credentials to access the system"
+            }
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleAuth} className="space-y-4">
-            <div>
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <Input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : (isSignUp ? 'Sign Up' : 'Sign In')}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              className="w-full"
-              onClick={() => setIsSignUp(!isSignUp)}
-            >
-              {isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
-            </Button>
-          </form>
+        <CardContent className="pt-4">
+          <AuthTabs
+            isLogin={isLogin}
+            setIsLogin={setIsLogin}
+            submitting={submitting}
+            onSubmit={onSubmit}
+          />
         </CardContent>
+        <CardFooter />
       </Card>
     </div>
   );

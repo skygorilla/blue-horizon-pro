@@ -1,0 +1,35 @@
+
+/* Manager Dashboard Styles */
+.bg-neutral-light {
+  background-color: #f8fafc;
+}
+
+.bg-maritime-navy {
+  background-color: #1e3a8a;
+}
+
+.text-maritime-navy {
+  color: #1e3a8a;
+}
+
+.bg-maritime-teal {
+  background-color: #0f766e;
+}
+
+.text-maritime-teal {
+  color: #0f766e;
+}
+
+.border-maritime-teal {
+  border-color: #0f766e;
+}
+
+.hover\:bg-maritime-teal:hover {
+  background-color: #0f766e;
+}
+
+.hover\:bg-maritime-navy:hover {
+  background-color: #1e3a8a;
+}
+
+/* Add to main App.css or import in App.tsx */

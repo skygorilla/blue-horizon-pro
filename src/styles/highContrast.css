@@ -1,0 +1,128 @@
+
+/* High Contrast Mode Styles */
+html.high-contrast {
+  /* Higher contrast color scheme */
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #9b87f5;
+  --primary-hover: #7E69AB;
+  --primary-foreground: #ffffff;
+  --border: #6E59A5;
+  --input: #1A1F2C;
+  --accent: #D6BCFA;
+  --accent-foreground: #000000;
+  --card: #1A1F2C;
+  --card-foreground: #ffffff;
+  
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Base elements */
+html.high-contrast body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Text contrast improvements */
+html.high-contrast h1, 
+html.high-contrast h2, 
+html.high-contrast h3, 
+html.high-contrast h4, 
+html.high-contrast h5, 
+html.high-contrast h6 {
+  color: var(--primary);
+}
+
+/* Card and container backgrounds */
+html.high-contrast .card,
+html.high-contrast .container,
+html.high-contrast .dashboard-card,
+html.high-contrast .excel-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 2px solid var(--border);
+}
+
+/* Form controls */
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast textarea {
+  background-color: var(--input);
+  color: var(--foreground);
+  border: 2px solid var(--border);
+}
+
+/* Buttons */
+html.high-contrast button,
+html.high-contrast .btn {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+}
+
+html.high-contrast button:hover,
+html.high-contrast .btn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Focus indicators */
+html.high-contrast *:focus {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Tables */
+html.high-contrast table {
+  border-color: var(--border);
+}
+
+html.high-contrast th {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+html.high-contrast tr:nth-child(odd) {
+  background-color: rgba(155, 135, 245, 0.15);
+}
+
+/* Links */
+html.high-contrast a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+html.high-contrast a:hover {
+  color: var(--primary);
+}
+
+/* Improved visibility for important elements */
+html.high-contrast .card-title,
+html.high-contrast [role="heading"] {
+  text-shadow: 0 0 2px #ffffff;
+}
+
+html.high-contrast button:active,
+html.high-contrast a:active,
+html.high-contrast [role="button"]:active {
+  outline: 3px solid #ffffff;
+}
+
+/* Card visibility improvements */
+html.high-contrast .dashboard-card {
+  box-shadow: 0 0 0 2px var(--border);
+}
+
+/* Improved touch feedback in high contrast mode */
+html.high-contrast button:active,
+html.high-contrast .btn:active {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+/* Menu and navigation enhancements */
+html.high-contrast nav,
+html.high-contrast [role="navigation"] {
+  background-color: #000000;
+  border-bottom: 3px solid var(--primary);
+}
