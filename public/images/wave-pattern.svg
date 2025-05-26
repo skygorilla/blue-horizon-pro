@@ -1,0 +1,22 @@
+
+<svg width="200" height="40" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base waves with opacity gradient -->
+  <path d="M0,15 C30,25 70,5 100,15 C130,25 170,5 200,15 L200,40 L0,40 Z" fill="#00796B" fill-opacity="0.15"/>
+  <path d="M0,20 C40,30 60,10 120,20 C160,30 180,10 200,20 L200,40 L0,40 Z" fill="#00796B" fill-opacity="0.1"/>
+  
+  <!-- Small dynamic waves -->
+  <path d="M0,25 C10,28 20,22 30,25 C40,28 50,22 60,25 C70,28 80,22 90,25 C100,28 110,22 120,25 C130,28 140,22 150,25 C160,28 170,22 180,25 C190,28 200,22 200,25 L200,40 L0,40 Z" fill="#00796B" fill-opacity="0.08"/>
+  
+  <!-- Decorative dots -->
+  <circle cx="20" cy="10" r="1.5" fill="#00796B" fill-opacity="0.2"/>
+  <circle cx="40" cy="8" r="1" fill="#00796B" fill-opacity="0.15"/>
+  <circle cx="65" cy="12" r="1.2" fill="#00796B" fill-opacity="0.18"/>
+  <circle cx="90" cy="7" r="0.8" fill="#00796B" fill-opacity="0.12"/>
+  <circle cx="120" cy="10" r="1.4" fill="#00796B" fill-opacity="0.2"/>
+  <circle cx="150" cy="6" r="1.1" fill="#00796B" fill-opacity="0.15"/>
+  <circle cx="180" cy="11" r="1" fill="#00796B" fill-opacity="0.18"/>
+  
+  <!-- Ship-related decorative elements -->
+  <path d="M120,5 L123,8 L126,5 L129,8 L132,5" stroke="#00796B" stroke-width="0.5" fill="none" stroke-opacity="0.25"/>
+  <path d="M160,3 L163,6 L166,3 L169,6 L172,3" stroke="#00796B" stroke-width="0.5" fill="none" stroke-opacity="0.25"/>
+</svg>

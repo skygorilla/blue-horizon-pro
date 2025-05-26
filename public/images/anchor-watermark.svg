@@ -1,0 +1,36 @@
+
+<svg width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Grid background -->
+  <defs>
+    <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#00796B" stroke-width="0.5" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+  <rect width="120" height="120" fill="url(#smallGrid)"/>
+  
+  <!-- Anchor icon with improved design -->
+  <g transform="translate(10, 10) scale(0.85)">
+    <circle cx="60" cy="60" r="45" fill="none" stroke="#00796B" stroke-width="1.5" stroke-opacity="0.12"/>
+    <path d="M60,20 L60,80 M35,35 L85,35 M25,90 C40,75 50,75 60,90 C70,75 80,75 95,90 C80,105 70,105 60,90 C50,105 40,105 25,90 Z" 
+      stroke="#00796B" stroke-width="6" fill="none" stroke-opacity="0.20" 
+      stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Ship wheel decorative element -->
+  <g transform="translate(30, 30) scale(0.2)">
+    <circle cx="60" cy="60" r="50" fill="none" stroke="#00796B" stroke-width="6" stroke-opacity="0.1"/>
+    <circle cx="60" cy="60" r="10" fill="none" stroke="#00796B" stroke-width="6" stroke-opacity="0.1"/>
+    <g stroke="#00796B" stroke-width="6" stroke-opacity="0.1">
+      <line x1="60" y1="0" x2="60" y2="120" />
+      <line x1="0" y1="60" x2="120" y2="60" />
+      <line x1="17.6" y1="17.6" x2="102.4" y2="102.4" />
+      <line x1="102.4" y1="17.6" x2="17.6" y2="102.4" />
+    </g>
+  </g>
+  
+  <!-- Decorative elements -->
+  <circle cx="60" cy="15" r="3" fill="#00796B" fill-opacity="0.15"/>
+  <circle cx="15" cy="60" r="2" fill="#00796B" fill-opacity="0.1"/>
+  <circle cx="105" cy="60" r="2" fill="#00796B" fill-opacity="0.1"/>
+  <circle cx="60" cy="105" r="3" fill="#00796B" fill-opacity="0.15"/>
+</svg>
