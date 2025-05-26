@@ -1,85 +1,139 @@
 
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { ShoppingItem } from '@/types/mealPlanTypes';
 
 interface AddItemFormProps {
-  availableCategories: string[];
-  onAddItem: (item: ShoppingItem) => void;
+  onAddItem: (item: Omit<ShoppingItem, 'id'>) => void;
+  onCancel: () => void;
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({ availableCategories, onAddItem }) => {
-  const [newItem, setNewItem] = useState({
+const AddItemForm: React.FC<AddItemFormProps> = ({ onAddItem, onCancel }) => {
+  const [item, setItem] = useState({
     name: '',
-    amount: '',
-    category: 'Miscellaneous',
-    unitPrice: undefined as number | undefined
+    quantity: 1,
+    unit: 'kg',
+    category: 'food',
+    unit_price: 0,
+    notes: ''
   });
-  
-  const handleAddItem = () => {
-    if (newItem.name && newItem.amount) {
-      const item: ShoppingItem = {
-        id: `item-${Date.now()}`,
-        name: newItem.name,
-        amount: newItem.amount,
-        category: newItem.category,
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (item.name.trim()) {
+      onAddItem({
+        ...item,
+        unit_price: item.unit_price,
+        estimated_cost: item.quantity * item.unit_price,
+        purchased: false,
         checked: false,
-        unitPrice: newItem.unitPrice
-      };
-      onAddItem(item);
-      setNewItem({
+        amount: `${item.quantity} ${item.unit}`
+      });
+      setItem({
         name: '',
-        amount: '',
-        category: 'Miscellaneous',
-        unitPrice: undefined
+        quantity: 1,
+        unit: 'kg',
+        category: 'food',
+        unit_price: 0,
+        notes: ''
       });
     }
   };
 
   return (
-    <div className="excel-card p-4">
-      <h4 className="text-sm font-semibold mb-2">Add New Item</h4>
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
-        <Input 
-          value={newItem.name}
-          onChange={(e) => setNewItem({...newItem, name: e.target.value})}
-          placeholder="Item name"
-          className="md:col-span-2"
+    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg">
+      <div>
+        <Label htmlFor="name">Item Name</Label>
+        <Input
+          id="name"
+          value={item.name}
+          onChange={(e) => setItem(prev => ({ ...prev, name: e.target.value }))}
+          placeholder="Enter item name"
+          required
         />
-        <Input 
-          value={newItem.amount}
-          onChange={(e) => setNewItem({...newItem, amount: e.target.value})}
-          placeholder="Amount (e.g. 2 kg)"
-          className="md:col-span-1"
-        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="quantity">Quantity</Label>
+          <Input
+            id="quantity"
+            type="number"
+            min="0.1"
+            step="0.1"
+            value={item.quantity}
+            onChange={(e) => setItem(prev => ({ ...prev, quantity: parseFloat(e.target.value) || 0 }))}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="unit">Unit</Label>
+          <select
+            id="unit"
+            value={item.unit}
+            onChange={(e) => setItem(prev => ({ ...prev, unit: e.target.value }))}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+          >
+            <option value="kg">kg</option>
+            <option value="g">g</option>
+            <option value="L">L</option>
+            <option value="ml">ml</option>
+            <option value="pack">pack</option>
+            <option value="piece">piece</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="category">Category</Label>
         <select
-          value={newItem.category}
-          onChange={(e) => setNewItem({...newItem, category: e.target.value})}
-          className="border border-input rounded-md px-3 py-2 text-sm md:col-span-1"
+          id="category"
+          value={item.category}
+          onChange={(e) => setItem(prev => ({ ...prev, category: e.target.value }))}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
         >
-          {availableCategories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
+          <option value="food">Food</option>
+          <option value="beverages">Beverages</option>
+          <option value="cleaning">Cleaning</option>
+          <option value="equipment">Equipment</option>
+          <option value="other">Other</option>
         </select>
-        <Input 
+      </div>
+
+      <div>
+        <Label htmlFor="unit_price">Unit Price</Label>
+        <Input
+          id="unit_price"
           type="number"
-          value={newItem.unitPrice || ''}
-          onChange={(e) => setNewItem({...newItem, unitPrice: e.target.value ? parseFloat(e.target.value) : undefined})}
-          placeholder="Unit price (optional)"
-          className="md:col-span-1"
+          min="0"
+          step="0.01"
+          value={item.unit_price}
+          onChange={(e) => setItem(prev => ({ ...prev, unit_price: parseFloat(e.target.value) || 0 }))}
+          placeholder="Price per unit"
         />
-        <Button 
-          onClick={handleAddItem}
-          disabled={!newItem.name || !newItem.amount}
-          className="md:col-span-1"
-        >
-          <Plus className="w-4 h-4 mr-1" />
-          Add
+      </div>
+
+      <div>
+        <Label htmlFor="notes">Notes</Label>
+        <Input
+          id="notes"
+          value={item.notes}
+          onChange={(e) => setItem(prev => ({ ...prev, notes: e.target.value }))}
+          placeholder="Additional notes"
+        />
+      </div>
+
+      <div className="flex gap-2 justify-end">
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button type="submit">
+          Add Item
         </Button>
       </div>
-    </div>
+    </form>
   );
 };
 

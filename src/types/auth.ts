@@ -1,41 +1,33 @@
 
 import { Session, User } from '@supabase/supabase-js';
 
-// Define all possible roles in the system
 export type UserRole = 'captain' | 'chef' | 'hostess' | 'crew' | 'manager';
 
 export interface UserProfile {
   id: string;
-  first_name: string | null;
-  last_name: string | null;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatar_url: string | null;
+  updated_at?: string;
   available_roles: UserRole[];
 }
 
-export interface AuthState {
-  session: Session | null;
+export interface AuthContextType {
   user: User | null;
-  loading: boolean;
+  session: Session | null;
+  profile: UserProfile | null;
   activeRole: UserRole | null;
-  userDisplayName: string | null;
+  loading: boolean;
+  isLoading: boolean;
+  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<any>;
+  signIn: (email: string, password: string) => Promise<any>;
+  signOut: () => Promise<any>;
+  setActiveRole: (role: UserRole | null) => void;
+  resetPassword: (email: string) => Promise<any>;
+  userDisplayName: string;
   userProfile: UserProfile | null;
-  // Add setter methods to the AuthState interface
+  setLoading: (loading: boolean) => void;
   setSession: (session: Session | null) => void;
   setUser: (user: User | null) => void;
-  setLoading: (loading: boolean) => void;
-  setActiveRole: (role: UserRole | null) => void;
 }
-
-export interface AuthResult {
-  success: boolean;
-  error?: unknown;
-}
-
-export interface AuthActions {
-  setActiveRole: (role: UserRole | null) => void;
-  signIn: (email: string, password: string) => Promise<AuthResult>;
-  signUp: (email: string, password: string) => Promise<AuthResult>;
-  signOut: () => Promise<AuthResult>;
-  resetPassword: (email: string) => Promise<AuthResult>;
-}
-
-export interface AuthContextType extends AuthState, AuthActions {}

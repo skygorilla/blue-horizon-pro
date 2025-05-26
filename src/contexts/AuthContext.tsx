@@ -18,6 +18,7 @@ export interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   activeRole: string | null;
+  loading: boolean;
   isLoading: boolean;
   signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<AuthResponse>;
   signIn: (email: string, password: string) => Promise<AuthResponse>;
@@ -25,6 +26,12 @@ export interface AuthContextType {
   setActiveRole: (role: string | null) => void;
   createProfile: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<void>;
+  resetPassword: (email: string) => Promise<any>;
+  userDisplayName: string;
+  userProfile: Profile | null;
+  setLoading: (loading: boolean) => void;
+  setSession: (session: Session | null) => void;
+  setUser: (user: User | null) => void;
 }
 
 // Create the auth context
@@ -104,7 +111,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) throw error;
-      return data;
+      return { data, error: null };
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) throw error;
-      return data;
+      return { data, error: null };
     } finally {
       setIsLoading(false);
     }
@@ -137,6 +144,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const resetPassword = async (email: string) => {
+    return await supabase.auth.resetPasswordForEmail(email);
   };
 
   const createProfile = async () => {
@@ -188,11 +199,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const userDisplayName = profile?.firstName ? `${profile.firstName} ${profile.lastName}` : user?.email || '';
+
   const value: AuthContextType = {
     user,
     session,
     profile,
     activeRole,
+    loading: isLoading,
     isLoading,
     signUp,
     signIn,
@@ -200,6 +214,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setActiveRole,
     createProfile,
     updateProfile,
+    resetPassword,
+    userDisplayName,
+    userProfile: profile,
+    setLoading: setIsLoading,
+    setSession,
+    setUser,
   };
 
   return (
@@ -217,3 +237,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export type { UserRole } from '@/types/auth';

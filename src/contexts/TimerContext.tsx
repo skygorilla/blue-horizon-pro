@@ -1,111 +1,105 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
-import { TimerInstance } from '@/components/ui/CookingTimer'; // Import the interface
-import { v4 as uuidv4 } from 'uuid';
-import { useToast } from '@/hooks/use-toast';
+
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { TimerInstance } from '@/types/timer';
 
 interface TimerContextType {
   timers: TimerInstance[];
-  addTimer: (label: string, duration: number) => void; // duration in seconds
-  updateTimer: (id: string, updates: Partial<TimerInstance>) => void;
+  addTimer: (name: string, duration: number) => void;
   removeTimer: (id: string) => void;
-  getRunningTimersCount: () => number;
+  startTimer: (id: string) => void;
+  pauseTimer: (id: string) => void;
+  resetTimer: (id: string) => void;
 }
 
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
 
-// Hook for persisting timers to local storage
-const usePersistentTimers = (initialValue: TimerInstance[] = []) => {
-  const [timers, setTimers] = useState<TimerInstance[]>(() => {
-    try {
-      const item = window.localStorage.getItem('cookingTimers');
-      // Add validation/migration logic if needed
-      return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
-      console.error("Error reading timers from localStorage", error);
-      return initialValue;
-    }
-  });
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem('cookingTimers', JSON.stringify(timers));
-    } catch (error) {
-      console.error("Error saving timers to localStorage", error);
-    }
-  }, [timers]);
-
-  return [timers, setTimers] as const;
-};
-
 export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [timers, setTimers] = usePersistentTimers([]);
-  const { toast } = useToast();
+  const [timers, setTimers] = useState<TimerInstance[]>([]);
 
-  // Check for finished timers periodically to show toast
-  useEffect(() => {
-    const interval = setInterval(() => {
-      timers.forEach(timer => {
-        if (timer.remainingTime <= 0 && !timer.isRunning && !timer.notified) { // Check if not already notified
-          toast({
-            title: "Timer Finished!",
-            description: `Your timer "${timer.label || 'Timer'}" is done.`,
-            variant: "destructive", // Use a distinct variant
-            duration: 15000, // Keep toast longer
-          });
-          // Mark as notified to prevent repeated toasts
-          updateTimer(timer.id, { notified: true });
-        }
-      });
-    }, 2000); // Check every 2 seconds
-
-    return () => clearInterval(interval);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timers, toast]); // Rerun when timers change
-
-  const addTimer = useCallback((label: string, duration: number) => {
+  const addTimer = useCallback((name: string, duration: number) => {
     const newTimer: TimerInstance = {
-      id: uuidv4(),
-      label,
-      initialDuration: duration,
-      remainingTime: duration,
-      isRunning: true,
-      createdAt: Date.now(),
-      notified: false, // Add notified flag
+      id: Date.now().toString(),
+      name,
+      duration,
+      startTime: 0,
+      isActive: false,
+      notified: false,
     };
     setTimers(prev => [...prev, newTimer]);
-  }, [setTimers]);
-
-  const updateTimer = useCallback((id: string, updates: Partial<TimerInstance>) => {
-    setTimers(prev =>
-      prev.map(timer =>
-        timer.id === id ? { ...timer, ...updates } : timer
-      )
-    );
-  }, [setTimers]);
+  }, []);
 
   const removeTimer = useCallback((id: string) => {
     setTimers(prev => prev.filter(timer => timer.id !== id));
-  }, [setTimers]);
+  }, []);
 
-  const getRunningTimersCount = useCallback(() => {
-    return timers.filter(timer => timer.isRunning).length;
-  }, [timers]);
+  const startTimer = useCallback((id: string) => {
+    setTimers(prev => prev.map(timer => 
+      timer.id === id 
+        ? { ...timer, isActive: true, startTime: Date.now(), notified: false }
+        : timer
+    ));
+  }, []);
+
+  const pauseTimer = useCallback((id: string) => {
+    setTimers(prev => prev.map(timer => 
+      timer.id === id 
+        ? { ...timer, isActive: false }
+        : timer
+    ));
+  }, []);
+
+  const resetTimer = useCallback((id: string) => {
+    setTimers(prev => prev.map(timer => 
+      timer.id === id 
+        ? { ...timer, isActive: false, startTime: 0, notified: false }
+        : timer
+    ));
+  }, []);
+
+  // Check for timer completion
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimers(prev => prev.map(timer => {
+        if (timer.isActive && !timer.notified && timer.startTime > 0) {
+          const elapsed = Date.now() - timer.startTime;
+          if (elapsed >= timer.duration * 1000) {
+            // Timer completed - send notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('Timer Complete!', {
+                body: `${timer.name} timer has finished`,
+                icon: '/favicon.ico'
+              });
+            }
+            return { ...timer, isActive: false, notified: true };
+          }
+        }
+        return timer;
+      }));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const value = {
     timers,
     addTimer,
-    updateTimer,
     removeTimer,
-    getRunningTimersCount,
+    startTimer,
+    pauseTimer,
+    resetTimer,
   };
 
-  return <TimerContext.Provider value={value}>{children}</TimerContext.Provider>;
+  return (
+    <TimerContext.Provider value={value}>
+      {children}
+    </TimerContext.Provider>
+  );
 };
 
-export const useTimers = (): TimerContextType => {
+export const useTimer = () => {
   const context = useContext(TimerContext);
-  if (context === undefined) {
-    throw new Error('useTimers must be used within a TimerProvider');
+  if (!context) {
+    throw new Error('useTimer must be used within a TimerProvider');
   }
   return context;
 };

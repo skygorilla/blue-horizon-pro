@@ -15,10 +15,12 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onComplete }) => {
   
   const [newItem, setNewItem] = useState<Omit<InventoryItem, 'id' | 'last_updated'>>({
     name: '',
-    category_id: 'food',
+    category: 'food',
     unit: 'kg',
-    quantity_in_stock: 0,
+    quantity: 0,
     unit_price: 0,
+    quantity_in_stock: 0,
+    category_id: 'food',
     supplier_id: ''
   });
   
@@ -34,10 +36,12 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onComplete }) => {
     
     setNewItem({
       name: '',
-      category_id: 'food',
+      category: 'food',
       unit: 'kg',
-      quantity_in_stock: 0,
+      quantity: 0,
       unit_price: 0,
+      quantity_in_stock: 0,
+      category_id: 'food',
       supplier_id: ''
     });
     
@@ -65,7 +69,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onComplete }) => {
             <select 
               id="category"
               value={newItem.category_id || ''}
-              onChange={(e) => setNewItem({...newItem, category_id: e.target.value})}
+              onChange={(e) => setNewItem({...newItem, category_id: e.target.value, category: e.target.value})}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
               <option value="food">Food</option>
@@ -102,7 +106,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({ onComplete }) => {
               min="0"
               step="0.01"
               value={newItem.quantity_in_stock} 
-              onChange={(e) => setNewItem({...newItem, quantity_in_stock: parseFloat(e.target.value) || 0})}
+              onChange={(e) => setNewItem({...newItem, quantity_in_stock: parseFloat(e.target.value) || 0, quantity: parseFloat(e.target.value) || 0})}
               placeholder="Initial stock quantity"
             />
           </div>

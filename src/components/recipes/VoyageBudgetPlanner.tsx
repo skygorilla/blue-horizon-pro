@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useInventory } from '@/contexts/useInventory';
 import { useMealPlan } from '@/contexts/MealPlanContext';
@@ -6,18 +7,21 @@ import { Button } from '@/components/ui/button';
 
 const VoyageBudgetPlanner: React.FC = () => {
   const { inventoryItems } = useInventory();
-  const { mealPlanRecipes } = useMealPlan(); // Updated to use the correct property
+  const { mealPlanRecipes } = useMealPlan();
 
-  const [voyageDuration, setVoyageDuration] = useState<number>(7); // Default to 7 days
-  const [crewSize, setCrewSize] = useState<number>(10); // Default to 10 crew members
-  const [dietaryMultiplier, setDietaryMultiplier] = useState<number>(1.0); // Default multiplier
+  const [voyageDuration, setVoyageDuration] = useState<number>(7);
+  const [crewSize, setCrewSize] = useState<number>(10);
+  const [dietaryMultiplier, setDietaryMultiplier] = useState<number>(1.0);
 
   const calculateBudget = () => {
     const dailyCostPerCrew = mealPlanRecipes.reduce((total, meal) => {
-      const mealCost = meal.ingredients.reduce((mealTotal, ingredient) => {
+      // Handle string ingredients by checking if it's an array first
+      const ingredientsList = Array.isArray(meal.ingredients) ? meal.ingredients : [];
+      
+      const mealCost = ingredientsList.reduce((mealTotal: number, ingredient: any) => {
         const inventoryItem = inventoryItems.find(item => item.name === ingredient.name);
-        if (inventoryItem) {
-          return mealTotal + (inventoryItem.unitPrice * ingredient.quantity);
+        if (inventoryItem && inventoryItem.unit_price) {
+          return mealTotal + (inventoryItem.unit_price * ingredient.quantity);
         }
         return mealTotal;
       }, 0);
