@@ -16,7 +16,11 @@ const VoyageBudgetPlanner: React.FC = () => {
   const calculateBudget = () => {
     const dailyCostPerCrew = mealPlanRecipes.reduce((total, meal) => {
       // Handle string ingredients by checking if it's an array first
-      const ingredientsList = Array.isArray(meal.ingredients) ? meal.ingredients : [];
+      const ingredientsList = Array.isArray(meal.ingredients) 
+        ? meal.ingredients 
+        : typeof meal.ingredients === 'string' 
+          ? [] 
+          : [];
       
       const mealCost = ingredientsList.reduce((mealTotal: number, ingredient: any) => {
         const inventoryItem = inventoryItems.find(item => item.name === ingredient.name);

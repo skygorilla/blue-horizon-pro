@@ -13,6 +13,14 @@ export interface UserProfile {
   available_roles: UserRole[];
 }
 
+export interface AuthActions {
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: any }>;
+  signUp: (email: string, password: string) => Promise<{ success: boolean; error?: any }>;
+  signOut: () => Promise<{ success: boolean; error?: any }>;
+  resetPassword: (email: string) => Promise<{ success: boolean; error?: any }>;
+  setActiveRole: (role: UserRole | null) => void;
+}
+
 export interface AuthContextType {
   user: User | null;
   session: Session | null;

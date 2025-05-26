@@ -1,241 +1,190 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { Session, User, AuthResponse } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabaseClient';
+import React, { createContext, useContext, useEffect, ReactNode, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { AuthContextType, UserRole, UserProfile } from '@/types/auth';
+import { useAuthState } from '@/hooks/useAuthState';
+import { useAuthActions } from '@/hooks/useAuthActions';
+import debounce from 'lodash.debounce';
+import { Session, User } from '@supabase/supabase-js';
+import { logger } from '@/utils/logger';
 
-// Define the Profile interface
-export interface Profile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  avatar_url: string | null;
-  updated_at?: string;
-  available_roles: string[];
-}
-
-export interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  profile: Profile | null;
-  activeRole: string | null;
-  loading: boolean;
-  isLoading: boolean;
-  signUp: (email: string, password: string, firstName?: string, lastName?: string) => Promise<AuthResponse>;
-  signIn: (email: string, password: string) => Promise<AuthResponse>;
-  signOut: () => Promise<void>;
-  setActiveRole: (role: string | null) => void;
-  createProfile: () => Promise<void>;
-  updateProfile: (updates: Partial<Profile>) => Promise<void>;
-  resetPassword: (email: string) => Promise<any>;
-  userDisplayName: string;
-  userProfile: Profile | null;
-  setLoading: (loading: boolean) => void;
-  setSession: (session: Session | null) => void;
-  setUser: (user: User | null) => void;
-}
-
-// Create the auth context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// AuthProvider component
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [activeRole, setActiveRole] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  // Use local state for action-related loading
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const { 
+    session, 
+    user,
+    loading: authStateLoading,
+    activeRole, setActiveRole,
+    setUser,
+    userDisplayName, userProfile
+  } = useAuthState();
+
+  // Update global logger context when user changes
+  useEffect(() => {
+    if (user) {
+      logger.setGlobalContext({
+        user: user.email || user.id,
+        userId: user.id,
+        userRole: activeRole,
+      });
+      logger.info('User authenticated', {
+        component: 'AuthContext',
+        tags: ['auth', 'session-start'],
+        details: {
+          email: user.email,
+          id: user.id,
+          role: activeRole,
+        }
+      });
+    } else if (!authStateLoading) {
+      // Only log when loading is complete to avoid spurious logout events during initialization
+      logger.setGlobalContext({
+        user: null,
+        userId: null,
+        userRole: null,
+      });
+      logger.info('User signed out or session expired', {
+        component: 'AuthContext',
+        tags: ['auth', 'session-end']
+      });
+    }
+  }, [user, activeRole, authStateLoading]);
+
+  const { signIn, signUp, signOut, resetPassword } = useAuthActions({ 
+    setLoading: setActionLoading,
+    setActiveRole 
+  });
+
+  // Enhanced versions of auth actions with logging
+  const enhancedSignIn = async (email: string, password: string) => {
+    logger.info('Sign in attempt', { 
+      component: 'AuthContext', 
+      tags: ['auth', 'sign-in-attempt'],
+      details: { email } 
+    });
+    
+    try {
+      const result = await signIn(email, password);
+      
+      if (result.success) {
+        logger.info('Sign in successful', { 
+          component: 'AuthContext', 
+          tags: ['auth', 'sign-in-success'],
+          details: { email } 
+        });
+      } else {
+        logger.warn('Sign in failed', { 
+          component: 'AuthContext', 
+          tags: ['auth', 'sign-in-failure'],
+          details: { 
+            email,
+            error: result.error 
+          } 
+        });
+      }
+      
+      return result;
+    } catch (error) {
+      logger.error('Sign in error', { 
+        component: 'AuthContext', 
+        tags: ['auth', 'sign-in-error'],
+        error,
+        details: { email } 
+      });
+      throw error;
+    }
+  };
+
+  const enhancedSignOut = async () => {
+    logger.info('Sign out attempt', { 
+      component: 'AuthContext', 
+      tags: ['auth', 'sign-out-attempt'] 
+    });
+    
+    try {
+      const result = await signOut();
+      
+      if (result.success) {
+        logger.info('Sign out successful', { 
+          component: 'AuthContext', 
+          tags: ['auth', 'sign-out-success'] 
+        });
+      } else {
+        logger.warn('Sign out failed', { 
+          component: 'AuthContext', 
+          tags: ['auth', 'sign-out-failure'],
+          details: { error: result.error } 
+        });
+      }
+      
+      return result;
+    } catch (error) {
+      logger.error('Sign out error', { 
+        component: 'AuthContext', 
+        tags: ['auth', 'sign-out-error'],
+        error 
+      });
+      throw error;
+    }
+  };
+
+  const debouncedSaveRole = debounce((role) => {
+    if (role) {
+      localStorage.setItem('seaplaner_active_role', role);
+      logger.debug('Active role saved to localStorage', { 
+        component: 'AuthContext',
+        details: { role } 
+      });
+    } else {
+      localStorage.removeItem('seaplaner_active_role');
+      logger.debug('Active role removed from localStorage', { 
+        component: 'AuthContext' 
+      });
+    }
+  }, 300);
 
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user || null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
-        setIsLoading(false);
-      }
-    };
+    debouncedSaveRole(activeRole);
+  }, [activeRole, debouncedSaveRole]);
 
-    fetchSession();
-
-    supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      setUser(session?.user || null);
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-        setIsLoading(false);
-      }
-    });
-  }, []);
-
-  const fetchProfile = async (userId: string) => {
-    setIsLoading(true);
-    try {
-      const { data: profileData, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error("Error fetching profile:", error);
-        setProfile(null);
-      } else {
-        setProfile(profileData as Profile);
-        setActiveRole(profileData?.available_roles?.[0] || null);
-      }
-    } catch (err) {
-      console.error("Unexpected error fetching profile:", err);
-      setProfile(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Sign up function
-  const signUp = async (email: string, password: string, firstName?: string, lastName?: string): Promise<AuthResponse> => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
-            firstName,
-            lastName,
-          },
-        },
-      });
-
-      if (error) throw error;
-      return { data, error: null };
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Sign in function
-  const signIn = async (email: string, password: string): Promise<AuthResponse> => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
-
-      if (error) throw error;
-      return { data, error: null };
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Sign out function
-  const signOut = async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      setProfile(null);
-      setActiveRole(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const resetPassword = async (email: string) => {
-    return await supabase.auth.resetPasswordForEmail(email);
-  };
-
-  const createProfile = async () => {
-    if (!user) {
-      console.error("User is null, cannot create profile");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert([{ id: user.id, email: user.email, firstName: '', lastName: '', avatar_url: null, available_roles: ['owner'] }])
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Error creating profile:", error);
-      } else {
-        setProfile(data as Profile);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const updateProfile = async (updates: Partial<Profile>) => {
-    if (!user) {
-      console.error("User is null, cannot update profile");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id)
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Error updating profile:", error);
-      } else {
-        setProfile(data as Profile);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const userDisplayName = profile?.firstName ? `${profile.firstName} ${profile.lastName}` : user?.email || '';
-
+  const loading = authStateLoading || actionLoading;
+  
   const value: AuthContextType = {
-    user,
     session,
-    profile,
+    setSession: () => console.warn("setSession should be managed within useAuthState"),
+    user,
+    setUser,
+    profile: userProfile,
+    loading,
+    isLoading: loading,
+    setLoading: setActionLoading,
     activeRole,
-    loading: isLoading,
-    isLoading,
+    setActiveRole: (role) => {
+      logger.info('Role changed', { 
+        component: 'AuthContext',
+        details: { previousRole: activeRole, newRole: role },
+        tags: ['auth', 'role-change']
+      });
+      setActiveRole(role);
+    },
+    signIn: enhancedSignIn,
     signUp,
-    signIn,
-    signOut,
-    setActiveRole,
-    createProfile,
-    updateProfile,
+    signOut: enhancedSignOut,
     resetPassword,
     userDisplayName,
-    userProfile: profile,
-    setLoading: setIsLoading,
-    setSession,
-    setUser,
+    userProfile
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!isLoading ? children : <div>Loading auth...</div>}
+      {children}
     </AuthContext.Provider>
   );
 };
 
-// Custom hook to use the auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-export type { UserRole } from '@/types/auth';
+export type { UserRole };
+export { type UserProfile } from '@/types/auth';
+export { AuthContext };

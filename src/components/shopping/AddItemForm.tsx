@@ -8,9 +8,10 @@ import { ShoppingItem } from '@/types/mealPlanTypes';
 interface AddItemFormProps {
   onAddItem: (item: Omit<ShoppingItem, 'id'>) => void;
   onCancel: () => void;
+  availableCategories?: string[];
 }
 
-const AddItemForm: React.FC<AddItemFormProps> = ({ onAddItem, onCancel }) => {
+const AddItemForm: React.FC<AddItemFormProps> = ({ onAddItem, onCancel, availableCategories = [] }) => {
   const [item, setItem] = useState({
     name: '',
     quantity: 1,

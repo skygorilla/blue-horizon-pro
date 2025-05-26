@@ -9,12 +9,14 @@ interface ShoppingListItemProps {
   item: ShoppingItem;
   onUpdate: (id: string, updates: Partial<ShoppingItem>) => void;
   onDelete: (id: string) => void;
+  onToggle?: (id: string) => void;
 }
 
 const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
   item,
   onUpdate,
   onDelete,
+  onToggle,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
@@ -47,7 +49,11 @@ const ShoppingListItem: React.FC<ShoppingListItemProps> = ({
   };
 
   const toggleChecked = () => {
-    onUpdate(item.id, { checked: !item.checked });
+    if (onToggle) {
+      onToggle(item.id);
+    } else {
+      onUpdate(item.id, { checked: !item.checked });
+    }
   };
 
   const totalCost = (item.unit_price || 0) * item.quantity;
