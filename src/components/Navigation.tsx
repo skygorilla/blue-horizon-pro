@@ -5,7 +5,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import RoleSelector from './RoleSelector';
 import { Button } from '@/components/ui/button';
 
+console.log('Navigation component loading...');
+
 const Navigation = () => {
+  console.log('Navigation component rendering...');
   const navigate = useNavigate();
   const { activeRole, signOut } = useAuth();
   
