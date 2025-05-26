@@ -1,0 +1,324 @@
+/* FuturisticLoginForm.css - Combined glowing frame with hover-only hexagons */
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: visible;
+}
+
+/* Background radial gradient for nebula effect */
+.login-container::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(123, 0, 255, 0.2),
+    rgba(255, 0, 153, 0.2),
+    rgba(0, 255, 255, 0.2),
+    transparent 70%
+  );
+  filter: blur(30px);
+  opacity: 0.5;
+  z-index: -1;
+}
+
+/* Form wrapper to position SVG elements */
+.form-wrapper {
+  position: relative;
+  width: 320px;
+  display: inline-block;
+}
+
+/* Glowing border frame animation */
+.form-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  padding: 1px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #00ffff 8deg,
+    transparent 16deg,
+    transparent 360deg
+  );
+  z-index: 3;
+  animation: traceGlow 8s linear infinite;
+
+  /* Show only border edge */
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  box-sizing: border-box;
+  pointer-events: none;
+
+  /* Sharper glow effect */
+  filter: drop-shadow(0 0 4px #00ffff) drop-shadow(0 0 10px #00ffff);
+}
+
+@keyframes traceGlow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulsing animation for hexagons */
+@keyframes hexPulse {
+  0% { opacity: 0.2; stroke-width: 0.5px; }
+  50% { opacity: 1; stroke-width: 1.2px; }
+  100% { opacity: 0.2; stroke-width: 0.5px; }
+}
+
+/* Pulsing animation for hexagons as a group */
+@keyframes groupRadioactivePulse {
+  0% { opacity: 0.15; stroke-width: 0.5px; }
+  50% { opacity: 0.85; stroke-width: 1.5px; }
+  100% { opacity: 0.15; stroke-width: 0.5px; }
+}
+
+@keyframes groupAppear {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes groupDisappear {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* SVG hexagon overlay positioning */
+.hexagon-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Styling for individual hexagons - outline only, no fill */
+.hexagon {
+  fill: none; /* No fill, just stroke */
+  stroke: #00ffff;
+  stroke-width: 1px;
+  opacity: 0; /* Hidden by default */
+  filter: url(#hex-glow);
+}
+
+.hexagon.active {
+  animation: groupRadioactivePulse 2.5s infinite ease-in-out;
+}
+
+/* Normal login form styling */
+.login-form {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 2.5rem;
+  background: rgba(10, 10, 10, 0.9);
+  border-radius: 20px;
+  color: #ccc;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+}
+
+.login-form-inner {
+  position: relative;
+  z-index: 3;
+  padding: 10px;
+}
+
+/* Login title style */
+.login-title {
+  font-size: 18px;
+  font-weight: 600; 
+  text-align: center;
+  margin-bottom: 25px;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #7b00ff, #ff0099, #00ffff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-transform: uppercase;
+}
+
+/* Input field styles */
+.input-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: #999;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px 15px;
+  height: 37px;
+  background-color: rgba(31, 31, 31, 0.7);
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease-in-out;
+  box-sizing: border-box;
+}
+
+.login-input::placeholder {
+  color: #555;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: #00ffff;
+  box-shadow: 0 0 0 1px #00ffff, 0 0 8px rgba(0, 255, 255, 0.4);
+  background-color: rgba(34, 34, 34, 0.8);
+}
+
+/* Remember me checkbox style */
+.remember-me-group {
+  margin-bottom: 25px;
+}
+
+.remember-me-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 11px;
+  color: #999;
+}
+
+.remember-me-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-custom {
+  height: 14px;
+  width: 14px;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 3px;
+  margin-right: 8px;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.remember-me-checkbox:checked ~ .checkbox-custom {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.checkbox-custom::after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 7px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.remember-me-checkbox:checked ~ .checkbox-custom::after {
+  display: block;
+}
+
+.remember-me-text {
+  user-select: none;
+  letter-spacing: 0.1px;
+}
+
+/* Button style */
+.login-button {
+  width: 100%;
+  height: 37px;
+  padding: 0 12px;
+  background: linear-gradient(180deg, #2a2a2e, #1a1a1e);
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #eee;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  letter-spacing: 0.7px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #00ffff, #ff00ff, #7b00ff);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.login-button:hover {
+  background: linear-gradient(180deg, #3a3a3e, #2a2a2e);
+  border-color: #00ffff;
+  color: white;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.login-button:hover::after {
+  opacity: 0.15;
+}
+
+.login-button:active {
+  background: linear-gradient(180deg, #1a1a1e, #2a2a2e);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  transform: translateY(1px);
+}
+
+/* Error message styling */
+.login-error {
+  background-color: rgba(200, 50, 50, 0.1);
+  border: 1px solid rgba(200, 80, 80, 0.3);
+  color: #ff8a8a;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 11px;
+  text-align: center;
+}
