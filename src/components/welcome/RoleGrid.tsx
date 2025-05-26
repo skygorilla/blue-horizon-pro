@@ -1,6 +1,7 @@
+
 import React from 'react';
 import RoleCard from '@/components/welcome/RoleCard';
-import { UserRole } from '@/contexts/AuthContext';
+import { UserRole } from '@/types/auth';
 import { motion } from 'framer-motion';
 
 interface RoleData {

@@ -7,7 +7,7 @@ import { ShoppingItem } from '@/types/mealPlanTypes';
 
 interface AddItemFormProps {
   onAddItem: (item: Omit<ShoppingItem, 'id'>) => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   availableCategories?: string[];
 }
 
@@ -127,9 +127,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ onAddItem, onCancel, availabl
       </div>
 
       <div className="flex gap-2 justify-end">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
+        {onCancel && (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
         <Button type="submit">
           Add Item
         </Button>

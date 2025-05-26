@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, ReactNode, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { AuthContextType, UserRole, UserProfile } from '@/types/auth';
@@ -158,6 +159,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     user,
     setUser,
     profile: userProfile,
+    userProfile,
     loading,
     isLoading: loading,
     setLoading: setActionLoading,
@@ -174,8 +176,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     signUp,
     signOut: enhancedSignOut,
     resetPassword,
-    userDisplayName,
-    userProfile
+    userDisplayName
   };
 
   return (
@@ -183,6 +184,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Export useAuth hook
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
 export type { UserRole };

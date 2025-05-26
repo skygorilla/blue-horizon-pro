@@ -1,14 +1,15 @@
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { TimerInstance } from '@/types/timer';
 
 interface TimerContextType {
   timers: TimerInstance[];
-  addTimer: (name: string, duration: number) => void;
+  addTimer: (name: string, duration: number) => string;
   removeTimer: (id: string) => void;
-  startTimer: (id: string) => void;
   pauseTimer: (id: string) => void;
+  resumeTimer: (id: string) => void;
   resetTimer: (id: string) => void;
+  clearAllTimers: () => void;
 }
 
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
@@ -16,81 +17,94 @@ const TimerContext = createContext<TimerContextType | undefined>(undefined);
 export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [timers, setTimers] = useState<TimerInstance[]>([]);
 
-  const addTimer = useCallback((name: string, duration: number) => {
-    const newTimer: TimerInstance = {
-      id: Date.now().toString(),
-      name,
-      duration,
-      startTime: 0,
-      isActive: false,
-      notified: false,
-    };
-    setTimers(prev => [...prev, newTimer]);
-  }, []);
-
-  const removeTimer = useCallback((id: string) => {
-    setTimers(prev => prev.filter(timer => timer.id !== id));
-  }, []);
-
-  const startTimer = useCallback((id: string) => {
-    setTimers(prev => prev.map(timer => 
-      timer.id === id 
-        ? { ...timer, isActive: true, startTime: Date.now(), notified: false }
-        : timer
-    ));
-  }, []);
-
-  const pauseTimer = useCallback((id: string) => {
-    setTimers(prev => prev.map(timer => 
-      timer.id === id 
-        ? { ...timer, isActive: false }
-        : timer
-    ));
-  }, []);
-
-  const resetTimer = useCallback((id: string) => {
-    setTimers(prev => prev.map(timer => 
-      timer.id === id 
-        ? { ...timer, isActive: false, startTime: 0, notified: false }
-        : timer
-    ));
-  }, []);
-
-  // Check for timer completion
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimers(prev => prev.map(timer => {
-        if (timer.isActive && !timer.notified && timer.startTime > 0) {
-          const elapsed = Date.now() - timer.startTime;
-          if (elapsed >= timer.duration * 1000) {
-            // Timer completed - send notification
-            if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification('Timer Complete!', {
-                body: `${timer.name} timer has finished`,
-                icon: '/favicon.ico'
-              });
+      setTimers(prevTimers => 
+        prevTimers.map(timer => {
+          if (timer.isActive && timer.remainingTime > 0) {
+            const newRemainingTime = timer.remainingTime - 1;
+            
+            // Check if timer just completed
+            if (newRemainingTime === 0) {
+              // Show notification
+              if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(`Timer "${timer.name}" completed!`);
+              }
+              
+              return {
+                ...timer,
+                remainingTime: 0,
+                isActive: false,
+                notified: true
+              };
             }
-            return { ...timer, isActive: false, notified: true };
+            
+            return {
+              ...timer,
+              remainingTime: newRemainingTime
+            };
           }
-        }
-        return timer;
-      }));
+          return timer;
+        })
+      );
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const value = {
-    timers,
-    addTimer,
-    removeTimer,
-    startTimer,
-    pauseTimer,
-    resetTimer,
+  const addTimer = (name: string, duration: number): string => {
+    const id = Date.now().toString();
+    const newTimer: TimerInstance = {
+      id,
+      name,
+      duration,
+      remainingTime: duration,
+      isActive: false,
+      notified: false
+    };
+    
+    setTimers(prev => [...prev, newTimer]);
+    return id;
+  };
+
+  const removeTimer = (id: string) => {
+    setTimers(prev => prev.filter(timer => timer.id !== id));
+  };
+
+  const pauseTimer = (id: string) => {
+    setTimers(prev => prev.map(timer => 
+      timer.id === id ? { ...timer, isActive: false } : timer
+    ));
+  };
+
+  const resumeTimer = (id: string) => {
+    setTimers(prev => prev.map(timer => 
+      timer.id === id ? { ...timer, isActive: true } : timer
+    ));
+  };
+
+  const resetTimer = (id: string) => {
+    setTimers(prev => prev.map(timer => 
+      timer.id === id 
+        ? { ...timer, remainingTime: timer.duration, isActive: false, notified: false }
+        : timer
+    ));
+  };
+
+  const clearAllTimers = () => {
+    setTimers([]);
   };
 
   return (
-    <TimerContext.Provider value={value}>
+    <TimerContext.Provider value={{
+      timers,
+      addTimer,
+      removeTimer,
+      pauseTimer,
+      resumeTimer,
+      resetTimer,
+      clearAllTimers
+    }}>
       {children}
     </TimerContext.Provider>
   );
@@ -98,8 +112,11 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
 export const useTimer = () => {
   const context = useContext(TimerContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useTimer must be used within a TimerProvider');
   }
   return context;
 };
+
+// Export useTimers as an alias for useTimer for backward compatibility
+export const useTimers = useTimer;
