@@ -143,3 +143,11 @@
     "vite": "^5.4.1"
   }
 }
+{
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  }
+}
+
