@@ -1,0 +1,60 @@
+/* RimLight effect for UI elements */
+
+.o-rimlight {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  
+  /* Using the custom properties from the component */
+  border-radius: var(--border-radius, 8px);
+}
+
+.o-rimlight::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--rim-angle, 0deg),
+    transparent 0deg,
+    var(--rim-color, #00ffff) 8deg,
+    transparent 16deg,
+    transparent 360deg
+  );
+  
+  /* This creates the 1px border effect */
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  
+  /* Glow effect based on intensity */
+  filter: drop-shadow(0 0 calc(4px * var(--glow-intensity, 1)) var(--rim-color, rgba(0, 255, 255, 0.8)));
+}
+
+/* Animation for the pulsing effect */
+.o-rimlight.pulse::before {
+  animation: rimlight-pulse 2s infinite ease-in-out;
+}
+
+@keyframes rimlight-pulse {
+  0% {
+    filter: drop-shadow(0 0 calc(2px * var(--glow-intensity, 1)) var(--rim-color, rgba(0, 255, 255, 0.6)));
+  }
+  50% {
+    filter: drop-shadow(0 0 calc(6px * var(--glow-intensity, 1)) var(--rim-color, rgba(0, 255, 255, 0.9)));
+  }
+  100% {
+    filter: drop-shadow(0 0 calc(2px * var(--glow-intensity, 1)) var(--rim-color, rgba(0, 255, 255, 0.6)));
+  }
+}
