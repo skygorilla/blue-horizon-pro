@@ -1,8 +1,9 @@
+
 import { Recipe } from './core/baseTypes';
 import { RecipeGeographyMetadata, RecipeWithGeography } from './metadata/geographyMetadata';
 import { RecipeTagsMetadata, RecipeWithTags } from './metadata/tagsMetadata';
 import { RecipeFilters } from './filtering/filterTypes';
-import { MealType } from './mealTypes'; // Import MealType
+import { MealType } from './mealTypes';
 
 // Define Difficulty levels
 export type RecipeDifficulty = 'easy' | 'medium' | 'hard';
@@ -17,51 +18,109 @@ export interface NutritionSummary {
 
 // Extend the base Recipe type with new fields
 export interface ExtendedRecipeData {
-  imageUrl?: string; // For appealing photography
-  mealType: MealType; // For visual distinction
-  prepTimeMinutes?: number; // Key info
-  cookTimeMinutes?: number; // Key info
-  totalTimeMinutes?: number; // Calculated or stored
-  servings?: number; // Key info
-  difficulty?: RecipeDifficulty; // Key info
-  averageRating?: number; // User ratings
-  reviewCount?: number; // User reviews
-  nutritionSummary?: NutritionSummary; // Nutritional info
-  isFavorite?: boolean; // For saved/favorites section
+  imageUrl?: string;
+  mealType: MealType;
+  prepTimeMinutes?: number;
+  cookTimeMinutes?: number;
+  totalTimeMinutes?: number;
+  servings?: number;
+  difficulty?: RecipeDifficulty;
+  averageRating?: number;
+  reviewCount?: number;
+  nutritionSummary?: NutritionSummary;
+  isFavorite?: boolean;
 }
 
 // Complete recipe type with all metadata and new fields
 export type CompleteRecipe = Recipe &
   RecipeGeographyMetadata &
   RecipeTagsMetadata &
-  ExtendedRecipeData; // Add the new fields
+  ExtendedRecipeData;
 
-export type GuestTypeCode = 'all' | 'owner' | 'guest' | 'crew' | 'both';
+export type GuestTypeCode = 'A' | 'B' | 'C' | 'D' | 'all' | 'owner' | 'guest' | 'crew' | 'both';
 
 export interface GuestTypeInfo {
+  id: string;
   code: GuestTypeCode;
   name: string;
   description: string;
+  shortDescription: string;
+  mealPattern: string[];
+  category: string;
+  icon: string;
 }
 
 export const GUEST_TYPES: GuestTypeInfo[] = [
-  { code: 'all', name: 'All Guests', description: 'All guest types' },
-  { code: 'owner', name: 'Owner', description: 'Boat owner' },
-  { code: 'guest', name: 'Guest', description: 'Invited guests' },
-  { code: 'crew', name: 'Crew', description: 'Crew members' },
-  { code: 'both', name: 'Both', description: 'Owner and guests' }
+  { 
+    id: '1', 
+    code: 'A', 
+    name: 'Adults', 
+    description: 'Regular adult meals', 
+    shortDescription: 'Breakfast and Lunch only',
+    mealPattern: ['breakfast', 'lunch', 'dinner'],
+    category: 'Recreation',
+    icon: 'Sun'
+  },
+  { 
+    id: '2', 
+    code: 'B', 
+    name: 'Children', 
+    description: 'Kid-friendly meals', 
+    shortDescription: 'Kid-friendly meals',
+    mealPattern: ['breakfast', 'lunch'],
+    category: 'Kids',
+    icon: 'Child'
+  },
+  { 
+    id: '3', 
+    code: 'C', 
+    name: 'Vegetarian', 
+    description: 'No meat or fish', 
+    shortDescription: 'No meat or fish',
+    mealPattern: ['breakfast', 'lunch', 'dinner'],
+    category: 'Dietary',
+    icon: 'Leaf'
+  },
+  { 
+    id: '4', 
+    code: 'D', 
+    name: 'Vegan', 
+    description: 'Plant-based only', 
+    shortDescription: 'Plant-based only',
+    mealPattern: ['breakfast', 'dinner'],
+    category: 'Dietary',
+    icon: 'Seedling'
+  }
 ];
 
 export interface MenuPlan {
   id: string;
   name: string;
-  meals: Record<string, any>;
+  startDate: string;
+  endDate: string;
+  guestCounts: GuestCount[];
+  mealAssignments: MealAssignment[];
 }
 
-// Update Recipe interface to include isVegetarian
+export interface GuestCount {
+  id: string;
+  guestTypeId: string;
+  guestTypeCode: GuestTypeCode;
+  count: number;
+}
+
+export interface MealAssignment {
+  id: string;
+  menuId: string;
+  recipeId: string;
+  mealType: 'breakfast' | 'lunch' | 'dinner';
+  dayOfWeek: number;
+}
+
+// Update Recipe interface to include isVegetarian and title as required
 export interface Recipe {
   id: string;
-  title: string;
+  title: string; // Make title required
   name: string;
   ingredients: string;
   instructions: string;
@@ -80,10 +139,12 @@ export interface ShoppingItem {
   quantity: number;
   unit: string;
   category: string;
-  unit_price?: number; // Use snake_case to match the errors
+  unit_price?: number;
   estimated_cost?: number;
   purchased?: boolean;
   notes?: string;
+  checked?: boolean;
+  amount?: string;
 }
 
 export interface InventoryItem {
@@ -95,11 +156,15 @@ export interface InventoryItem {
   unit_price?: number;
   restock_needed?: boolean;
   notes?: string;
+  quantity_in_stock?: number;
+  category_id?: string;
+  supplier_id?: string;
+  last_updated?: string;
 }
 
 // Re-export all recipe-related types
 export type {
-  Recipe,
+  Recipe as BaseRecipe,
   RecipeGeographyMetadata,
   RecipeWithGeography,
   RecipeTagsMetadata,
