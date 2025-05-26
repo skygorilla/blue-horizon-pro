@@ -1,3 +1,4 @@
+
 project_id = "cxdknqvqipgxehlozzpi"
 
 [api]
@@ -27,14 +28,11 @@ port = 54323
 # External URL of the API server that frontend connects to.
 api_url = "http://localhost"
 
-[functions]
-# Port to use for Functions.
-# port = 54324 # Commenting out due to parse error
-# Function to be served if path doesn't match any other function
-# default_function_path = "" # Commenting out due to parse error
-
 [functions.get_shelf_life_defaults]
 verify_jwt = true
+
+[functions.admin-operations]
+verify_jwt = false
 
 [inbucket]
 # Port to use for the Inbucket API.
@@ -63,26 +61,6 @@ enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
 # Allow/disallow new user signups to your project.
 enable_signup = true
-# enable_mfa = true # This setting is typically managed in the dashboard, commenting out.
-
-# [auth.email_templates] # Commenting out as this seems to be a dashboard-only setting
-# reset_password_subject = "Reset Your Password for Blue Horizon"
-# reset_password_body = """
-# Hi {{ .User.Email }},
-# 
-# We received a request to reset the password for your account on Blue Horizon. If you made this request, please click the link below to reset your password:
-# 
-# {{ .ConfirmationURL }}
-# 
-# If you did not request a password reset, you can safely ignore this email. Your account is still secure.
-# 
-# If you have any questions or need further assistance, feel free to contact us at support@bluehorizon.com.
-# 
-# Thank you for using Blue Horizon!
-# 
-# Best regards,  
-# The Blue Horizon Team
-# """
 
 [analytics]
 enabled = false
